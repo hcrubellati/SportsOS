@@ -1,0 +1,20 @@
+services:
+  sportsos:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sportsos-platform
+    ports:
+      - "${PORT:-4000}:4000"
+    environment:
+      - PORT=4000
+      - HOST=0.0.0.0
+      - CLUB_NAME=${CLUB_NAME:-Atlético Metropolitano FC}
+      - DATA_FILE=/app/data/sportsos-db.json
+    volumes:
+      - sportsos_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  sportsos_data:
+    driver: local

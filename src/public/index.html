@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SportsOS — The Operational System for Sports Organizations</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <!-- Ambient Stadium Lighting Background -->
+  <div class="ambient-bg">
+    <div class="ambient-orb orb-emerald"></div>
+    <div class="ambient-orb orb-blue"></div>
+    <div class="ambient-orb orb-amber"></div>
+  </div>
+
+  <!-- Top TV-OS Status & Telemetry Header -->
+  <header class="tv-topbar">
+    <div class="brand-cluster">
+      <div class="club-crest" id="clubShortCode">AMFC</div>
+      <div>
+        <div class="brand-title-row">
+          <span class="platform-badge">SPORTS OS</span>
+          <h1 id="clubNameTitle">Atlético Metropolitano FC</h1>
+        </div>
+        <p class="brand-subtitle" id="nextMatchBanner">
+          Loading matchday telemetry...
+        </p>
+      </div>
+    </div>
+
+    <!-- Center Spatial Remote Trigger -->
+    <button class="remote-command-pill" id="openCopilotBtn" title="Open Embedded MCP Remote & Copilot (Cmd/Ctrl + K)">
+      <span class="pulse-dot"></span>
+      <span class="remote-label">Ask MCP Copilot or Run Command...</span>
+      <kbd>⌘K</kbd>
+    </button>
+
+    <!-- Right Telemetry & Active Role Switcher -->
+    <div class="topbar-right">
+      <div class="mcp-status-pill" id="mcpHeaderBadge" title="Click to open Embedded MCP Hub">
+        <span class="mcp-dot"></span>
+        <span>MCP Embedded</span>
+        <strong id="mcpToolCountBadge">7 Tools</strong>
+      </div>
+
+      <div class="user-switcher-wrap">
+        <label for="activeUserSelect" class="sr-only">Active Operator</label>
+        <span class="role-prefix">Operator:</span>
+        <select id="activeUserSelect" class="tv-select-pill" title="Switch Active Operator to test RBAC Permissions"></select>
+      </div>
+
+      <div class="tv-clock" id="tvClock">23:35</div>
+    </div>
+  </header>
+
+  <!-- Spatial TV Channel Dock -->
+  <nav class="tv-channel-dock" id="channelDock" aria-label="SportsOS Channels">
+    <!-- Dynamically populated with Home Deck, Staff, Teams, Venues, Custom Objects, Object Studio, Users, MCP Hub -->
+  </nav>
+
+  <!-- Main Spatial Viewport -->
+  <main class="tv-viewport" id="tvViewport">
+    <!-- Rendered dynamically by app.js -->
+  </main>
+
+  <!-- Bottom TV Remote Hints Bar -->
+  <footer class="tv-remote-footer">
+    <div class="remote-hints">
+      <span><kbd>←</kbd><kbd>→</kbd><kbd>↑</kbd><kbd>↓</kbd> Spatial Focus</span>
+      <span><kbd>Enter</kbd> Inspect / Lifecycle Remote</span>
+      <span><kbd>[</kbd> <kbd>]</kbd> Advance Lifecycle Stage</span>
+      <span><kbd>⌘K</kbd> MCP AI Remote</span>
+      <span><kbd>N</kbd> New Record</span>
+    </div>
+    <div class="footer-meta">
+      <span>Orchestration Layer: <strong id="footerConnectorsCount">6 Connected Systems</strong></span>
+      <span>•</span>
+      <a href="/mcp" target="_blank" rel="noopener" class="footer-link">Raw MCP Endpoint (/mcp) ↗</a>
+    </div>
+  </footer>
+
+  <!-- Slide-Over Record Inspector & Lifecycle Remote Drawer -->
+  <div class="drawer-backdrop hidden" id="recordDrawerBackdrop">
+    <aside class="tv-drawer" id="recordDrawer" aria-label="Record Lifecycle Remote">
+      <div id="recordDrawerContent"></div>
+    </aside>
+  </div>
+
+  <!-- Create Record Modal -->
+  <div class="modal-backdrop hidden" id="createRecordModalBackdrop">
+    <div class="tv-modal" id="createRecordModal">
+      <div id="createRecordModalContent"></div>
+    </div>
+  </div>
+
+  <!-- Embedded MCP Copilot / Universal Remote Overlay (Cmd+K) -->
+  <div class="modal-backdrop hidden" id="copilotModalBackdrop">
+    <div class="tv-modal copilot-modal">
+      <div class="modal-header">
+        <div>
+          <span class="eyebrow-tag">EMBEDDED MODEL CONTEXT PROTOCOL</span>
+          <h2>SportsOS AI Remote & MCP Command Bar</h2>
+        </div>
+        <button class="tv-icon-btn" id="closeCopilotBtn">✕</button>
+      </div>
+      <p class="modal-desc">
+        Execute natural-language operations or invoke live MCP tools across Staff, Teams, Venues, and Custom Objects.
+      </p>
+      <form id="copilotForm" class="copilot-input-row">
+        <input
+          type="text"
+          id="copilotInput"
+          placeholder="Try: 'Move Javier Ortega to Active', 'Activate Players blueprint', or 'Show Venue readiness'..."
+          autocomplete="off"
+        />
+        <button type="submit" class="tv-btn tv-btn-primary">Run via MCP</button>
+      </form>
+      <div class="copilot-quick-chips">
+        <button type="button" class="chip-btn" data-prompt="Show operational pulse and matchday readiness">📊 Operational Pulse</button>
+        <button type="button" class="chip-btn" data-prompt="Move Javier Ortega to Active">🪪 Move Javier Ortega → Active</button>
+        <button type="button" class="chip-btn" data-prompt="Move Training Pitch 3 to Available">🏟️ Set Pitch 3 → Available</button>
+        <button type="button" class="chip-btn" data-prompt="Activate Players blueprint">⚽ Activate Players Object</button>
+        <button type="button" class="chip-btn" data-prompt="Activate Medical Cases blueprint">🩺 Activate Medical Cases Object</button>
+      </div>
+      <div id="copilotResultBox" class="copilot-result-box hidden"></div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="tvToast" class="tv-toast hidden"></div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
