@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Checkout | ApexForge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
+</head>
+<body class="bg-[#0B0F19] text-slate-100 min-h-screen flex items-center justify-center p-4 antialiased">
+
+  <div class="max-w-xl w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl relative">
+    
+    <div class="flex items-center justify-between border-b border-slate-800 pb-6 mb-6">
+      <div class="flex items-center gap-3">
+        <span class="w-8 h-8 rounded-lg bg-[#CCFF00] text-black font-black flex items-center justify-center text-sm">A</span>
+        <div>
+          <h1 class="text-lg font-bold text-white">Stripe & Firebase Sandbox</h1>
+          <p class="text-xs text-slate-400">Account Provisioning & Payment Tokenization</p>
+        </div>
+      </div>
+      <a href="index.html" class="text-xs text-slate-400 hover:text-white">✕ Cancel</a>
+    </div>
+
+    <!-- Selected Tier Pill -->
+    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 mb-6 flex items-center justify-between">
+      <div>
+        <p class="text-xs uppercase font-bold text-[#CCFF00]">Selected Subscription</p>
+        <p id="plan-name" class="text-base font-bold text-white">Elite Coaching</p>
+      </div>
+      <div class="text-right">
+        <p id="plan-price" class="text-2xl font-black text-white">$119</p>
+        <p class="text-[11px] text-slate-400">Billed monthly</p>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <form id="checkout-form" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold uppercase text-slate-400 mb-1.5">Full Name</label>
+        <input type="text" id="cust-name" required value="Alex Rivers" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#CCFF00]">
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold uppercase text-slate-400 mb-1.5">Email (Firebase Auth Identity)</label>
+        <input type="email" id="cust-email" required value="alex.rivers@example.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#CCFF00]">
+      </div>
+
+      <!-- Simulated Stripe Payment Element -->
+      <div class="pt-2">
+        <label class="block text-xs font-semibold uppercase text-slate-400 mb-1.5">Payment Method (Simulated Stripe Element)</label>
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 space-y-3">
+          <div class="flex items-center gap-3 text-sm text-slate-300">
+            <span class="text-lg">💳</span>
+            <input type="text" value="•••• •••• •••• 4242" disabled class="bg-transparent text-slate-400 flex-1 focus:outline-none">
+            <span class="text-xs font-bold text-slate-500">12/28</span>
+          </div>
+        </div>
+        <p class="text-[11px] text-slate-500 mt-1 flex items-center gap-1">🔒 Processed directly via Stripe API. No card details stored on custom servers.</p>
+      </div>
+
+      <button type="submit" id="btn-submit" class="w-full bg-[#CCFF00] hover:bg-[#b8e600] text-black font-extrabold py-4 rounded-xl shadow-lg mt-6 transition flex items-center justify-center gap-2">
+        <span>Pay & Enter Client Portal</span>
+      </button>
+    </form>
+  </div>
+
+  <script>
+    // Read plan parameters from URL if present
+    const params = new URLSearchParams(window.location.search);
+    const plan = params.get('plan') || 'Elite Coaching';
+    const price = params.get('price') || '119';
+
+    document.getElementById('plan-name').textContent = plan;
+    document.getElementById('plan-price').textContent = '$' + price;
+
+    document.getElementById('checkout-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('btn-submit');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>Provisioning Account in Firebase...</span>';
+
+      const userProfile = {
+        name: document.getElementById('cust-name').value,
+        email: document.getElementById('cust-email').value,
+        plan: plan,
+        price: price,
+        age: 32,
+        weight: 175,
+        heightFt: 5,
+        heightIn: 10,
+        goal: "Hypertrophy & Functional Aerobic Capacity",
+        caloriesBurned: 480,
+        activeMinutes: 45,
+        workoutsDone: 13,
+        streak: 4,
+        isCompletedToday: false
+      };
+
+      // Store in browser session storage for the app to read
+      localStorage.setItem('apex_user', JSON.stringify(userProfile));
+
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 700);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biometrics & Billing | ApexForge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
+</head>
+<body class="bg-[#0B0F19] text-slate-100 min-h-screen flex flex-col antialiased">
+
+  <!-- Authenticated Header -->
+  <header class="border-b border-slate-800 bg-slate-950/80 sticky top-0 z-30 backdrop-blur-md">
+    <div class="max-w-6xl mx-auto px-6 h-18 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="w-8 h-8 rounded-lg bg-[#CCFF00] text-black font-black flex items-center justify-center text-sm">A</span>
+        <span class="text-sm font-bold tracking-wider uppercase text-white hidden sm:inline">Apex<span class="text-[#CCFF00]">Portal</span></span>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="dashboard.html" class="text-xs font-bold text-slate-400 hover:text-white transition pb-1">Workouts & KPIs</a>
+        <a href="account.html" class="text-xs font-bold text-[#CCFF00] border-b-2 border-[#CCFF00] pb-1">Biometrics & Plan</a>
+        <div class="h-4 w-[1px] bg-slate-800"></div>
+        <div class="flex items-center gap-2">
+          <a href="index.html" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-md transition">Exit</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-6 py-10 flex-1 w-full space-y-8">
+    <div>
+      <h1 class="text-2xl font-extrabold text-white">Biometrics & Subscription Management</h1>
+      <p class="text-xs text-slate-400 mt-1">Configure physical targets and self-manage payment cards via the Stripe Customer Portal.</p>
+    </div>
+
+    <!-- Stripe Subscription Management Card -->
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-800 gap-4">
+        <div>
+          <span class="text-[10px] uppercase font-bold text-[#CCFF00]">Billing Entity: Stripe Invoicing</span>
+          <h2 id="card-plan-name" class="text-xl font-bold text-white mt-1">Elite Coaching Subscription</h2>
+          <p class="text-xs text-slate-400">Renews on the 1st of every month &bull; Card ending in 4242</p>
+        </div>
+        <button onclick="triggerStripeModal()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs px-5 py-3 rounded-xl border border-slate-700 transition">
+          Launch Stripe Billing Portal ↗
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 text-xs text-slate-300">
+        <div>
+          <span class="text-slate-500 uppercase font-semibold text-[10px] block">Current Plan Status</span>
+          <span class="text-[#CCFF00] font-bold text-sm">Active &bull; Auto-Renew</span>
+        </div>
+        <div>
+          <span class="text-slate-500 uppercase font-semibold text-[10px] block">Monthly Total</span>
+          <span id="card-plan-price" class="font-bold text-sm text-white">$119.00 / mo</span>
+        </div>
+        <div>
+          <span class="text-slate-500 uppercase font-semibold text-[10px] block">Payment Gateway</span>
+          <span class="text-slate-300 font-bold text-sm">Stripe Hosted Checkout</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Client Biometrics Form & Live TDEE Engine -->
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8">
+      <h2 class="text-lg font-bold text-white mb-6">Physiological Parameters (Firestore Profile)</h2>
+      
+      <form id="bio-form" class="space-y-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Full Legal Name</label>
+            <input type="text" id="bio-name" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#CCFF00]">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Email Address</label>
+            <input type="email" id="bio-email" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#CCFF00]">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Age (Years)</label>
+            <input type="number" id="bio-age" oninput="calculateBiometrics()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#CCFF00]">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Weight (lbs)</label>
+            <input type="number" id="bio-weight" oninput="calculateBiometrics()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#CCFF00]">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Height (Inches total)</label>
+            <input type="number" id="bio-height" oninput="calculateBiometrics()" value="70" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#CCFF00]">
+          </div>
+        </div>
+
+        <!-- Calculated Biometric KPI Output -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 bg-slate-950 border border-slate-800/80 rounded-2xl">
+          <div>
+            <p class="text-[10px] uppercase font-bold text-slate-400">Calculated Body Mass Index (BMI)</p>
+            <p id="calc-bmi" class="text-2xl font-black text-white mt-1">25.1 <span class="text-xs font-semibold text-teal-400">(Optimal)</span></p>
+          </div>
+          <div>
+            <p class="text-[10px] uppercase font-bold text-slate-400">Estimated Daily Energy (TDEE)</p>
+            <p id="calc-tdee" class="text-2xl font-black text-[#CCFF00] mt-1">2,450 <span class="text-xs font-normal text-slate-400">kcal / day</span></p>
+          </div>
+        </div>
+
+        <div class="flex justify-end pt-2">
+          <button type="submit" class="bg-[#CCFF00] hover:bg-[#b8e600] text-black font-extrabold px-6 py-3 rounded-xl transition">
+            Save Biometric Updates
+          </button>
+        </div>
+      </form>
+    </div>
+
+  </main>
+
+  <script>
+    let user = JSON.parse(localStorage.getItem('apex_user')) || {
+      name: "Alex Rivers",
+      email: "alex.rivers@example.com",
+      plan: "Elite Coaching",
+      price: "119",
+      age: 32,
+      weight: 175,
+      heightFt: 5,
+      heightIn: 10,
+    };
+
+    document.getElementById('bio-name').value = user.name || "Alex Rivers";
+    document.getElementById('bio-email').value = user.email || "alex.rivers@example.com";
+    document.getElementById('bio-age').value = user.age || 32;
+    document.getElementById('bio-weight').value = user.weight || 175;
+    document.getElementById('card-plan-name').textContent = (user.plan || "Elite Coaching") + " Subscription";
+    document.getElementById('card-plan-price').textContent = "$" + (user.price || "119") + ".00 / mo";
+
+    function calculateBiometrics() {
+      const weight = parseFloat(document.getElementById('bio-weight').value) || 175;
+      const height = parseFloat(document.getElementById('bio-height').value) || 70;
+      const age = parseFloat(document.getElementById('bio-age').value) || 32;
+
+      // BMI Formula = (Weight in lbs / (Height in inches)^2) * 703
+      const bmi = ((weight / (height * height)) * 703).toFixed(1);
+      
+      // Mifflin-St Jeor TDEE approximation (Activity multiplier 1.4x)
+      const bmr = (10 * (weight * 0.453592)) + (6.25 * (height * 2.54)) - (5 * age) + 5;
+      const tdee = Math.round(bmr * 1.45);
+
+      document.getElementById('calc-bmi').innerHTML = `${bmi} <span class="text-xs font-semibold text-teal-400">(Target Zone)</span>`;
+      document.getElementById('calc-tdee').innerHTML = `${tdee.toLocaleString()} <span class="text-xs font-normal text-slate-400">kcal / day</span>`;
+    }
+
+    document.getElementById('bio-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      user.name = document.getElementById('bio-name').value;
+      user.email = document.getElementById('bio-email').value;
+      user.age = parseInt(document.getElementById('bio-age').value);
+      user.weight = parseInt(document.getElementById('bio-weight').value);
+      localStorage.setItem('apex_user', JSON.stringify(user));
+      alert("Profile and biometric targets successfully updated in local state!");
+    });
+
+    function triggerStripeModal() {
+      alert("Redirecting to simulated Stripe Billing Portal:\n• Manage active payment cards\n• Download PDF tax invoices\n• Upgrade or downgrade coaching tiers\n• Cancel self-serve anytime");
+    }
+
+    calculateBiometrics();
+  </script>
+</body>
+</html>
