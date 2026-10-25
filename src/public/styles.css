@@ -1,23 +1,35 @@
 :root {
-  --bg-deep: #060911;
-  --bg-surface: rgba(17, 24, 39, 0.72);
-  --bg-card: rgba(24, 33, 52, 0.78);
-  --bg-card-hover: rgba(34, 47, 74, 0.95);
-  --border-subtle: rgba(255, 255, 255, 0.09);
-  --border-focus: #10b981;
+  /* Ergonomic, Fatigue-Free TV OS Dark Palette */
+  --bg-deep: #0a0c10;
+  --bg-surface: rgba(18, 22, 32, 0.78);
+  --bg-surface-elevated: #161b26;
+  --bg-card: rgba(21, 26, 38, 0.88);
+  --bg-card-hover: rgba(28, 35, 50, 0.98);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-medium: rgba(255, 255, 255, 0.14);
+  --border-focus: #60a5fa;
+
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
   --text-dim: #64748b;
-  --accent-emerald: #10b981;
-  --accent-blue: #3b82f6;
-  --accent-amber: #f59e0b;
+
+  /* Calm, Non-Flashy Accents */
+  --accent-azure: #3b82f6;
+  --accent-sky: #38bdf8;
+  --accent-indigo: #6366f1;
   --accent-purple: #8b5cf6;
-  --accent-red: #ef4444;
+  --accent-amber: #f59e0b;
+  --accent-rose: #f43f5e;
+  --accent-emerald: #10b981;
+
+  --radius-xl: 24px;
   --radius-lg: 20px;
   --radius-md: 14px;
   --radius-sm: 10px;
-  --shadow-tv: 0 22px 45px -12px rgba(0, 0, 0, 0.75);
-  --shadow-focus: 0 0 0 3px rgba(16, 185, 129, 0.9), 0 24px 48px -8px rgba(16, 185, 129, 0.28);
+
+  --shadow-tv: 0 20px 48px -12px rgba(0, 0, 0, 0.65);
+  --shadow-focus: 0 0 0 2.5px #60a5fa, 0 20px 40px -8px rgba(0, 0, 0, 0.7);
+  --shadow-app-focus: 0 0 0 3px #ffffff, 0 20px 42px -6px rgba(0, 0, 0, 0.85);
 }
 
 * {
@@ -28,6 +40,8 @@
 
 body {
   background-color: var(--bg-deep);
+  background-image: radial-gradient(ellipse 80% 50% at 50% -10%, #171d2b 0%, #0a0c10 100%);
+  background-attachment: fixed;
   color: var(--text-main);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", Roboto, sans-serif;
   min-height: 100vh;
@@ -45,7 +59,7 @@ body {
   clip: rect(0, 0, 0, 0);
 }
 
-/* Ambient Stadium Lighting */
+/* Ambient Deep Lighting (Calm, Zero Eye-Fatigue) */
 .ambient-bg {
   position: fixed;
   inset: 0;
@@ -57,46 +71,40 @@ body {
 .ambient-orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(130px);
-  opacity: 0.22;
+  filter: blur(140px);
+  pointer-events: none;
 }
 
-.orb-emerald {
-  width: 560px;
-  height: 560px;
-  background: #10b981;
-  top: -180px;
+.orb-slate {
+  width: 680px;
+  height: 680px;
+  background: #1e293b;
+  top: -240px;
   left: -120px;
+  opacity: 0.12;
 }
 
-.orb-blue {
+.orb-indigo {
   width: 620px;
   height: 620px;
-  background: #3b82f6;
+  background: #312e81;
   top: 10%;
   right: -200px;
+  opacity: 0.08;
 }
 
-.orb-amber {
-  width: 480px;
-  height: 480px;
-  background: #8b5cf6;
-  bottom: -180px;
-  left: 32%;
-}
-
-/* Top Bar */
+/* Top TV-OS Status & Telemetry Header */
 .tv-topbar {
   position: sticky;
   top: 0;
-  z-index: 30;
+  z-index: 35;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  padding: 16px 32px;
-  background: rgba(6, 9, 17, 0.82);
-  backdrop-filter: blur(22px);
+  padding: 14px 32px;
+  background: rgba(10, 12, 16, 0.88);
+  backdrop-filter: blur(24px);
   border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -107,17 +115,19 @@ body {
 }
 
 .club-crest {
-  width: 48px;
-  height: 48px;
+  width: 46px;
+  height: 46px;
   border-radius: 14px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #1d4ed8 100%);
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 60%, #0284c7 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 900;
   font-size: 0.9rem;
   letter-spacing: 0.06em;
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
 }
 
 .brand-title-row {
@@ -132,13 +142,13 @@ body {
   letter-spacing: 0.14em;
   padding: 3px 8px;
   border-radius: 6px;
-  background: rgba(16, 185, 129, 0.16);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.35);
+  background: rgba(59, 130, 246, 0.14);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.28);
 }
 
 .brand-title-row h1 {
-  font-size: 1.18rem;
+  font-size: 1.15rem;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
@@ -156,26 +166,26 @@ body {
   gap: 12px;
   padding: 10px 16px;
   border-radius: 999px;
-  background: rgba(30, 41, 59, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(22, 27, 38, 0.82);
+  border: 1px solid var(--border-subtle);
   color: var(--text-muted);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .remote-command-pill:hover {
-  border-color: var(--accent-emerald);
+  border-color: var(--accent-azure);
   color: var(--text-main);
-  transform: scale(1.01);
-  box-shadow: 0 0 24px rgba(16, 185, 129, 0.2);
+  background: rgba(28, 35, 50, 0.95);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.18);
 }
 
 .pulse-dot {
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: var(--accent-emerald);
-  box-shadow: 0 0 10px var(--accent-emerald);
+  background: var(--accent-sky);
+  box-shadow: 0 0 8px var(--accent-sky);
 }
 
 .remote-label {
@@ -185,8 +195,8 @@ body {
 }
 
 kbd {
-  background: rgba(15, 23, 42, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(15, 20, 30, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 6px;
   padding: 2px 7px;
   font-size: 0.74rem;
@@ -207,7 +217,7 @@ kbd {
   padding: 8px 13px;
   border-radius: 999px;
   background: rgba(139, 92, 246, 0.14);
-  border: 1px solid rgba(139, 92, 246, 0.4);
+  border: 1px solid rgba(139, 92, 246, 0.35);
   font-size: 0.78rem;
   color: #ddd6fe;
   cursor: pointer;
@@ -215,7 +225,7 @@ kbd {
 }
 
 .mcp-status-pill:hover {
-  background: rgba(139, 92, 246, 0.26);
+  background: rgba(139, 92, 246, 0.24);
 }
 
 .mcp-dot {
@@ -230,7 +240,7 @@ kbd {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(30, 41, 59, 0.75);
+  background: rgba(22, 27, 38, 0.8);
   padding: 6px 12px;
   border-radius: 999px;
   border: 1px solid var(--border-subtle);
@@ -252,7 +262,7 @@ kbd {
 }
 
 .tv-select-pill option {
-  background: #0f172a;
+  background: #121620;
   color: #f8fafc;
 }
 
@@ -265,62 +275,284 @@ kbd {
   text-align: right;
 }
 
-/* Spatial Channel Dock */
-.tv-channel-dock {
+/* ==========================================================================
+   Smart TV OS Navigation Deck: Category Bar + Objects App Row
+   (Modeled directly after LG webOS & Apple TV OS app launchers)
+   ========================================================================== */
+
+.tv-navigation-deck {
   position: relative;
-  z-index: 20;
+  z-index: 25;
+  background: rgba(10, 12, 16, 0.65);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 12px 32px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* TV Category Tabs (Top Row in Screenshot: Sports, Gaming, Music, Home Hub...) */
+.tv-category-bar {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 14px 32px;
   overflow-x: auto;
   scrollbar-width: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 2px 0;
 }
 
-.tv-channel-dock::-webkit-scrollbar {
+.tv-category-bar::-webkit-scrollbar {
   display: none;
 }
 
-.channel-pill {
-  display: flex;
+.category-tab-btn {
+  display: inline-flex;
   align-items: center;
-  gap: 9px;
-  padding: 10px 18px;
+  gap: 8px;
+  padding: 8px 18px;
   border-radius: 999px;
-  background: rgba(30, 41, 59, 0.55);
-  border: 1px solid var(--border-subtle);
+  background: rgba(25, 31, 45, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--text-muted);
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.18s ease;
 }
 
-.channel-pill:hover {
-  background: rgba(51, 65, 85, 0.75);
-  color: var(--text-main);
-  transform: translateY(-2px);
-}
-
-.channel-pill.active {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(59, 130, 246, 0.25));
-  border-color: var(--accent-emerald);
+.category-tab-btn:hover {
+  background: rgba(35, 44, 64, 0.85);
   color: #ffffff;
-  box-shadow: 0 8px 24px -6px rgba(16, 185, 129, 0.4);
-  transform: scale(1.03);
+  transform: translateY(-1px);
 }
 
-.channel-count {
-  font-size: 0.72rem;
+.category-tab-btn.active {
+  background: #ffffff;
+  color: #0a0d14;
+  border-color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 4px 18px rgba(255, 255, 255, 0.2);
+}
+
+/* TV OS App Tiles Shelf (The centerpiece row of squircle app tiles) */
+.tv-apps-shelf {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 6px 4px 10px;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+}
+
+.tv-apps-shelf::-webkit-scrollbar {
+  display: none;
+}
+
+/* Individual TV OS Squircle App Tile */
+.tv-app-tile {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0;
+  outline: none;
+  text-decoration: none;
+  user-select: none;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tv-app-squircle {
+  width: 84px;
+  height: 84px;
+  border-radius: 22px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 22px -4px rgba(0, 0, 0, 0.55);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Signature TV OS Top-Half Glass Reflection Sheen */
+.tv-app-gloss {
+  position: absolute;
+  inset: 0;
+  border-radius: 22px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.28) 0%,
+    rgba(255, 255, 255, 0.06) 46%,
+    rgba(255, 255, 255, 0) 50%
+  );
+  pointer-events: none;
+}
+
+.tv-app-icon {
+  font-size: 2.1rem;
+  line-height: 1;
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.35));
+  transition: transform 0.22s ease;
+}
+
+.tv-app-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 3;
   padding: 2px 7px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #e2e8f0;
+  background: rgba(10, 14, 23, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
-/* Main Viewport */
+.tv-app-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: center;
+  max-width: 90px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+  transition: color 0.18s ease;
+}
+
+.tv-app-active-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent-azure);
+  box-shadow: 0 0 6px var(--accent-azure);
+  margin-top: -4px;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+/* TV OS Focus & Hover States (Signature Scale-Up & High-Gloss Highlight Ring) */
+.tv-app-tile:hover .tv-app-squircle,
+.tv-app-tile.spatial-focus .tv-app-squircle,
+.tv-app-tile:focus-visible .tv-app-squircle {
+  transform: scale(1.12) translateY(-6px);
+  box-shadow: var(--shadow-app-focus);
+  border-color: rgba(255, 255, 255, 0.6);
+  z-index: 10;
+}
+
+.tv-app-tile:hover .tv-app-icon,
+.tv-app-tile.spatial-focus .tv-app-icon {
+  transform: scale(1.08);
+}
+
+.tv-app-tile:hover .tv-app-label,
+.tv-app-tile.spatial-focus .tv-app-label {
+  color: #ffffff;
+}
+
+.tv-app-tile.active .tv-app-squircle {
+  box-shadow: 0 0 0 2.5px #60a5fa, 0 16px 32px rgba(0, 0, 0, 0.6);
+}
+
+.tv-app-tile.active .tv-app-label {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.tv-app-tile.active .tv-app-active-dot {
+  opacity: 1;
+}
+
+/* Curated App Gradients per Object Category (TV OS Style) */
+.app-grad-store {
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+}
+
+.app-grad-home {
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+}
+
+.app-grad-staff {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+.app-grad-team {
+  background: linear-gradient(135deg, #e11d48 0%, #9f1239 100%);
+}
+
+.app-grad-venue {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+}
+
+.app-grad-players {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+}
+
+.app-grad-medical {
+  background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%);
+}
+
+.app-grad-schedules {
+  background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+}
+
+.app-grad-contracts {
+  background: linear-gradient(135deg, #ca8a04 0%, #854d0e 100%);
+}
+
+.app-grad-scouting {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+.app-grad-assets {
+  background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+}
+
+.app-grad-fans {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+}
+
+.app-grad-partners {
+  background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
+}
+
+.app-grad-studio {
+  background: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%);
+}
+
+.app-grad-users {
+  background: linear-gradient(135deg, #475569 0%, #334155 100%);
+}
+
+.app-grad-mcp {
+  background: linear-gradient(135deg, #4f46e5 0%, #312e81 100%);
+}
+
+.app-grad-add {
+  background: rgba(25, 32, 46, 0.5);
+  border: 2px dashed rgba(255, 255, 255, 0.24) !important;
+}
+
+/* ==========================================================================
+   Main Viewport
+   ========================================================================== */
+
 .tv-viewport {
   position: relative;
   z-index: 10;
@@ -331,14 +563,14 @@ kbd {
   margin: 0 auto;
 }
 
-/* Hero Spotlight Banner */
+/* Hero Spotlight Banner (Calm Dark Matte) */
 .hero-spotlight {
   position: relative;
   border-radius: var(--radius-lg);
   padding: 28px 32px;
   margin-bottom: 28px;
-  background: linear-gradient(125deg, rgba(16, 185, 129, 0.18) 0%, rgba(15, 23, 42, 0.92) 52%, rgba(59, 130, 246, 0.18) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(135deg, rgba(22, 28, 40, 0.94) 0%, rgba(13, 16, 24, 0.98) 100%);
+  border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-tv);
   display: flex;
   flex-wrap: wrap;
@@ -357,7 +589,7 @@ kbd {
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #34d399;
+  color: var(--accent-sky);
   margin-bottom: 8px;
 }
 
@@ -367,11 +599,12 @@ kbd {
   letter-spacing: -0.025em;
   line-height: 1.18;
   margin-bottom: 8px;
+  color: #ffffff;
 }
 
 .hero-left p {
   color: var(--text-muted);
-  font-size: 0.96rem;
+  font-size: 0.95rem;
   line-height: 1.5;
 }
 
@@ -389,7 +622,7 @@ kbd {
 }
 
 .metric-tile {
-  background: rgba(15, 23, 42, 0.76);
+  background: rgba(18, 22, 32, 0.85);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 14px 16px;
@@ -406,6 +639,39 @@ kbd {
   font-size: 0.75rem;
   color: var(--text-muted);
   margin-top: 3px;
+}
+
+/* Home Deck Apps Showcase Bar (Directly Inspired by TV OS Screenshot) */
+.home-apps-showcase {
+  background: rgba(18, 22, 32, 0.6);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px 22px;
+  margin-bottom: 30px;
+}
+
+.home-apps-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.home-apps-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.home-apps-header-left h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.home-apps-header-left p {
+  font-size: 0.82rem;
+  color: var(--text-muted);
 }
 
 /* Horizontal Swimlanes / TV Rails */
@@ -432,9 +698,17 @@ kbd {
   letter-spacing: -0.01em;
 }
 
+.channel-count {
+  font-size: 0.72rem;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+}
+
 .stage-dot {
-  width: 11px;
-  height: 11px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   display: inline-block;
 }
@@ -445,7 +719,7 @@ kbd {
   overflow-x: auto;
   padding: 6px 4px 14px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
 }
 
 /* Spatial TV Cards */
@@ -468,9 +742,9 @@ kbd {
 .tv-card:hover,
 .tv-card.spatial-focus {
   background: var(--bg-card-hover);
-  transform: translateY(-5px) scale(1.02);
+  transform: translateY(-4px) scale(1.02);
   box-shadow: var(--shadow-focus);
-  border-color: var(--accent-emerald);
+  border-color: var(--border-focus);
   outline: none;
 }
 
@@ -496,10 +770,10 @@ kbd {
 .stage-pill {
   font-size: 0.72rem;
   font-weight: 700;
-  padding: 4px 10px;
+  padding: 3px 9px;
   border-radius: 999px;
   letter-spacing: 0.03em;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .card-title {
@@ -527,7 +801,7 @@ kbd {
   font-size: 0.72rem;
   padding: 3px 8px;
   border-radius: 6px;
-  background: rgba(15, 23, 42, 0.72);
+  background: rgba(15, 20, 30, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: #cbd5e1;
 }
@@ -538,24 +812,26 @@ kbd {
   justify-content: space-between;
   margin-top: 12px;
   padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   font-size: 0.74rem;
   color: var(--text-dim);
 }
 
 .quick-step-btn {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.35);
+  background: rgba(59, 130, 246, 0.15);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.35);
   border-radius: 6px;
   padding: 3px 8px;
   font-size: 0.72rem;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .quick-step-btn:hover {
-  background: rgba(16, 185, 129, 0.3);
+  background: rgba(59, 130, 246, 0.3);
+  color: #ffffff;
 }
 
 /* Lifecycle Pipeline Bar in Channel Header */
@@ -570,7 +846,7 @@ kbd {
 .pipeline-step {
   flex: 1;
   min-width: 155px;
-  background: rgba(15, 23, 42, 0.75);
+  background: rgba(18, 22, 32, 0.75);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   padding: 12px 14px;
@@ -583,8 +859,8 @@ kbd {
 
 .pipeline-step.active,
 .pipeline-step:hover {
-  border-color: var(--accent-emerald);
-  background: rgba(16, 185, 129, 0.12);
+  border-color: var(--accent-azure);
+  background: rgba(59, 130, 246, 0.12);
 }
 
 .pipeline-step-name {
@@ -611,30 +887,47 @@ kbd {
   font-weight: 700;
   cursor: pointer;
   border: 1px solid var(--border-subtle);
-  background: rgba(30, 41, 59, 0.85);
+  background: rgba(26, 33, 48, 0.85);
   color: var(--text-main);
   transition: all 0.18s ease;
 }
 
 .tv-btn:hover {
   transform: translateY(-1px);
-  border-color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(35, 44, 64, 0.95);
 }
 
+/* Apple TV Style High-Contrast Crisp Primary Pill */
 .tv-btn-primary {
-  background: linear-gradient(135deg, #10b981, #059669);
-  border-color: #10b981;
-  color: #04130d;
+  background: #f8fafc;
+  border-color: #ffffff;
+  color: #0a0d14;
 }
 
 .tv-btn-primary:hover {
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+  background: #ffffff;
+  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25);
+}
+
+.tv-btn-blue {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  border-color: #3b82f6;
+  color: #ffffff;
+}
+
+.tv-btn-blue:hover {
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
 }
 
 .tv-btn-purple {
-  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-  border-color: #a78bfa;
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  border-color: #8b5cf6;
   color: #ffffff;
+}
+
+.tv-btn-purple:hover {
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.35);
 }
 
 /* Grid Layouts for Studio, Users, MCP Hub */
@@ -664,6 +957,7 @@ kbd {
 .tv-panel h3 {
   font-size: 1.2rem;
   margin-bottom: 6px;
+  color: #ffffff;
 }
 
 .tv-panel p.panel-sub {
@@ -692,8 +986,8 @@ kbd {
   width: 100%;
   padding: 10px 14px;
   border-radius: 10px;
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(15, 20, 30, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   color: var(--text-main);
   font-size: 0.9rem;
   font-family: inherit;
@@ -702,7 +996,8 @@ kbd {
 .form-input:focus,
 .form-select:focus,
 .form-textarea:focus {
-  border-color: var(--accent-emerald);
+  border-color: var(--accent-azure);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
   outline: none;
 }
 
@@ -714,19 +1009,26 @@ kbd {
 
 .blueprint-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
 }
 
 .blueprint-card {
-  background: rgba(15, 23, 42, 0.75);
+  background: rgba(18, 22, 32, 0.78);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  padding: 16px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
+  transition: all 0.2s ease;
+}
+
+.blueprint-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(25, 31, 45, 0.9);
+  transform: translateY(-2px);
 }
 
 /* Slide-Over Drawer & Modals */
@@ -735,8 +1037,8 @@ kbd {
   position: fixed;
   inset: 0;
   z-index: 60;
-  background: rgba(3, 6, 12, 0.78);
-  backdrop-filter: blur(10px);
+  background: rgba(3, 5, 8, 0.78);
+  backdrop-filter: blur(12px);
   display: flex;
   justify-content: flex-end;
 }
@@ -754,8 +1056,8 @@ kbd {
 .tv-drawer {
   width: min(560px, 95vw);
   height: 100%;
-  background: #0b1120;
-  border-left: 1px solid rgba(255, 255, 255, 0.14);
+  background: #0d111a;
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
   padding: 28px;
   overflow-y: auto;
   box-shadow: -20px 0 50px rgba(0, 0, 0, 0.8);
@@ -765,8 +1067,8 @@ kbd {
   width: min(680px, 95vw);
   max-height: 90vh;
   overflow-y: auto;
-  background: #0f172a;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: #111622;
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: var(--radius-lg);
   padding: 26px;
   box-shadow: var(--shadow-tv);
@@ -794,6 +1096,11 @@ kbd {
   height: 34px;
   border-radius: 8px;
   cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tv-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
 }
 
 .copilot-input-row {
@@ -806,10 +1113,16 @@ kbd {
   flex: 1;
   padding: 12px 16px;
   border-radius: 12px;
-  background: rgba(6, 9, 17, 0.9);
-  border: 1px solid rgba(16, 185, 129, 0.5);
+  background: rgba(10, 14, 22, 0.9);
+  border: 1px solid rgba(59, 130, 246, 0.4);
   color: #ffffff;
   font-size: 0.95rem;
+}
+
+.copilot-input-row input:focus {
+  border-color: var(--accent-azure);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
 }
 
 .copilot-quick-chips {
@@ -820,36 +1133,38 @@ kbd {
 }
 
 .chip-btn {
-  background: rgba(30, 41, 59, 0.85);
+  background: rgba(25, 32, 46, 0.85);
   border: 1px solid var(--border-subtle);
   color: #cbd5e1;
   padding: 6px 11px;
   border-radius: 999px;
   font-size: 0.76rem;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .chip-btn:hover {
-  border-color: var(--accent-emerald);
+  border-color: var(--accent-azure);
   color: #ffffff;
+  background: rgba(35, 45, 65, 0.95);
 }
 
 .copilot-result-box {
-  background: rgba(6, 9, 17, 0.92);
-  border: 1px solid rgba(139, 92, 246, 0.4);
+  background: rgba(10, 14, 22, 0.95);
+  border: 1px solid rgba(139, 92, 246, 0.35);
   border-radius: 12px;
   padding: 16px;
   font-size: 0.86rem;
 }
 
 .code-block {
-  background: #050811;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #080b12;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
   padding: 14px;
   font-family: "SF Mono", "Fira Code", monospace;
   font-size: 0.78rem;
-  color: #a7f3d0;
+  color: #93c5fd;
   overflow-x: auto;
   white-space: pre-wrap;
   margin-top: 10px;
@@ -862,7 +1177,7 @@ kbd {
   left: 0;
   right: 0;
   z-index: 25;
-  background: rgba(6, 9, 17, 0.88);
+  background: rgba(10, 12, 16, 0.92);
   backdrop-filter: blur(16px);
   border-top: 1px solid var(--border-subtle);
   padding: 10px 32px;
@@ -886,9 +1201,13 @@ kbd {
 }
 
 .footer-link {
-  color: #34d399;
+  color: #93c5fd;
   text-decoration: none;
   font-weight: 600;
+}
+
+.footer-link:hover {
+  text-decoration: underline;
 }
 
 /* Toast */
@@ -897,12 +1216,12 @@ kbd {
   bottom: 58px;
   right: 32px;
   z-index: 90;
-  background: rgba(15, 23, 42, 0.96);
-  border: 1px solid var(--accent-emerald);
+  background: rgba(18, 22, 32, 0.98);
+  border: 1px solid var(--accent-azure);
   color: #ffffff;
   padding: 12px 20px;
   border-radius: 12px;
-  box-shadow: var(--shadow-focus);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
   font-size: 0.88rem;
   font-weight: 600;
 }

@@ -9,6 +9,7 @@
 
 const state = {
   activeChannel: "home", // 'home' | object.apiName | 'studio' | 'users' | 'mcp'
+  activeCategory: "all", // 'all' | 'sporting' | 'facilities' | 'corporate' | 'intelligence'
   stageFilter: null,
   activeUserId: "usr_elena",
   pulse: null,
@@ -52,6 +53,141 @@ function escapeHtml(str) {
     .replace(/"/g, "&quot;");
 }
 
+function getObjectAppMeta(apiName) {
+  const metaMap = {
+    staff: {
+      label: "Staff",
+      category: "sporting",
+      gradientClass: "app-grad-staff",
+      icon: "🪪",
+      sublabel: "Personnel"
+    },
+    team: {
+      label: "Teams",
+      category: "sporting",
+      gradientClass: "app-grad-team",
+      icon: "🛡️",
+      sublabel: "Squads"
+    },
+    venue: {
+      label: "Venues",
+      category: "facilities",
+      gradientClass: "app-grad-venue",
+      icon: "🏟️",
+      sublabel: "Facilities"
+    },
+    player__c: {
+      label: "Players",
+      category: "sporting",
+      gradientClass: "app-grad-players",
+      icon: "⚽",
+      sublabel: "Roster"
+    },
+    medical_case__c: {
+      label: "Medical",
+      category: "sporting",
+      gradientClass: "app-grad-medical",
+      icon: "🩺",
+      sublabel: "RTP Cases"
+    },
+    schedule__c: {
+      label: "Schedules",
+      category: "facilities",
+      gradientClass: "app-grad-schedules",
+      icon: "⏱️",
+      sublabel: "Pitch Slots"
+    },
+    event__c: {
+      label: "Events",
+      category: "facilities",
+      gradientClass: "app-grad-venue",
+      icon: "📅",
+      sublabel: "Matchday Ops"
+    },
+    asset__c: {
+      label: "Assets",
+      category: "facilities",
+      gradientClass: "app-grad-assets",
+      icon: "📡",
+      sublabel: "Equipment"
+    },
+    contract__c: {
+      label: "Contracts",
+      category: "corporate",
+      gradientClass: "app-grad-contracts",
+      icon: "📜",
+      sublabel: "Registrations"
+    },
+    customer__c: {
+      label: "Fans / Accs",
+      category: "corporate",
+      gradientClass: "app-grad-fans",
+      icon: "🎟️",
+      sublabel: "Ticketing"
+    },
+    partner__c: {
+      label: "Partners",
+      category: "corporate",
+      gradientClass: "app-grad-partners",
+      icon: "🤝",
+      sublabel: "Commercial"
+    },
+    department__c: {
+      label: "Depts",
+      category: "corporate",
+      gradientClass: "app-grad-users",
+      icon: "🏛️",
+      sublabel: "Org Structure"
+    },
+    project__c: {
+      label: "Projects",
+      category: "corporate",
+      gradientClass: "app-grad-studio",
+      icon: "🚀",
+      sublabel: "Initiatives"
+    },
+    scouting_target__c: {
+      label: "Scouting",
+      category: "sporting",
+      gradientClass: "app-grad-scouting",
+      icon: "🔭",
+      sublabel: "Recruitment"
+    },
+    accreditation__c: {
+      label: "Security",
+      category: "facilities",
+      gradientClass: "app-grad-users",
+      icon: "🔐",
+      sublabel: "Accreditations"
+    }
+  };
+  return metaMap[apiName] || {
+    label: apiName.replace(/__c$/, "").replace(/_/g, " "),
+    category: "facilities",
+    gradientClass: "app-grad-home",
+    icon: "📦",
+    sublabel: "Custom Object"
+  };
+}
+
+function renderAppTileHtml({ channel, label, icon, gradientClass, badge, isActive, isAction, actionType }) {
+  const dataAttr = isAction
+    ? `data-action="${escapeHtml(actionType)}"`
+    : `data-channel="${escapeHtml(channel)}"`;
+
+  return `
+    <button class="tv-app-tile ${isActive ? "active" : ""}" ${dataAttr} tabindex="0" title="Launch ${escapeHtml(label)} App">
+      <div class="tv-app-squircle ${gradientClass}">
+        <div class="tv-app-gloss"></div>
+        <span class="tv-app-icon">${escapeHtml(icon)}</span>
+        ${badge !== undefined && badge !== null ? `<span class="tv-app-badge">${escapeHtml(String(badge))}</span>` : ""}
+      </div>
+      <span class="tv-app-label">${escapeHtml(label)}</span>
+      <span class="tv-app-active-dot"></span>
+    </button>
+  `;
+}
+
 async function loadBootstrap() {
   const data = await apiFetch("/api/bootstrap");
   state.pulse = data.pulse;
@@ -93,54 +229,164 @@ function renderHeader() {
 
 function renderChannelDock() {
   const dock = document.getElementById("channelDock");
-  const objectButtons = state.objects
+  const unactivated = state.blueprints.filter((b) => !b.isActivated);
+
+  // Top Category Filter Tabs (Matching TV OS screenshot: Sports, Gaming, Music, Home Hub...)
+  const categories = [
+    { id: "all", label: "⚡ All Objects & Apps" },
+    { id: "sporting", label: "⚽ Sporting Operations" },
+    { id: "facilities", label: "🏟️ Facilities & Venues" },
+    { id: "corporate", label: "💼 Club Administration" },
+    { id: "intelligence", label: "🤖 AI & MCP Remote" }
+  ];
+
+  const categoryPillsHtml = categories
     .map(
-      (obj) => `
-      <button class="channel-pill ${state.activeChannel === obj.apiName ? "active" : ""}" data-channel="${escapeHtml(obj.apiName)}">
-        <span>${escapeHtml(obj.icon)}</span>
-        <span>${escapeHtml(obj.pluralLabel)}</span>
-        <span class="channel-count">${(state.recordsByObject[obj.apiName] || []).length}</span>
+      (cat) => `
+      <button class="category-tab-btn ${state.activeCategory === cat.id ? "active" : ""}" data-category="${cat.id}">
+        ${cat.label}
       </button>
     `
     )
     .join("");
 
-  dock.innerHTML = `
-    <button class="channel-pill ${state.activeChannel === "home" ? "active" : ""}" data-channel="home">
-      <span>📺</span>
-      <span>Live Home Deck</span>
-    </button>
-    ${objectButtons}
-    <button class="channel-pill ${state.activeChannel === "studio" ? "active" : ""}" data-channel="studio">
-      <span>✨</span>
-      <span>Object Studio</span>
-      <span class="channel-count">+${state.blueprints.filter((b) => !b.isActivated).length} Blueprints</span>
-    </button>
-    <button class="channel-pill ${state.activeChannel === "users" ? "active" : ""}" data-channel="users">
-      <span>👥</span>
-      <span>Users & RBAC</span>
-      <span class="channel-count">${state.users.length}</span>
-    </button>
-    <button class="channel-pill ${state.activeChannel === "mcp" ? "active" : ""}" data-channel="mcp">
-      <span>🤖</span>
-      <span>MCP & Orchestration</span>
+  // Filter objects based on activeCategory
+  const filteredObjects = state.objects.filter((obj) => {
+    if (state.activeCategory === "all") return true;
+    const meta = getObjectAppMeta(obj.apiName);
+    return meta.category === state.activeCategory;
+  });
+
+  const objectAppTilesHtml = filteredObjects
+    .map((obj) => {
+      const meta = getObjectAppMeta(obj.apiName);
+      const count = (state.recordsByObject[obj.apiName] || []).length;
+      return renderAppTileHtml({
+        channel: obj.apiName,
+        label: obj.pluralLabel || meta.label,
+        icon: obj.icon || meta.icon,
+        gradientClass: meta.gradientClass,
+        badge: count,
+        isActive: state.activeChannel === obj.apiName
+      });
+    })
+    .join("");
+
+  // App Store tile (like LG APPS tile)
+  const storeAppTileHtml =
+    state.activeCategory === "all" || state.activeCategory === "intelligence"
+      ? renderAppTileHtml({
+          channel: "studio",
+          label: "App Store",
+          icon: "❖",
+          gradientClass: "app-grad-store",
+          badge: `+${unactivated.length}`,
+          isActive: state.activeChannel === "studio"
+        })
+      : "";
+
+  // Live Home Deck tile
+  const homeAppTileHtml =
+    state.activeCategory === "all"
+      ? renderAppTileHtml({
+          channel: "home",
+          label: "Live Home",
+          icon: "📺",
+          gradientClass: "app-grad-home",
+          badge: "Deck",
+          isActive: state.activeChannel === "home"
+        })
+      : "";
+
+  // System apps
+  const studioAppTileHtml =
+    state.activeCategory === "all" || state.activeCategory === "intelligence"
+      ? renderAppTileHtml({
+          channel: "studio",
+          label: "Studio",
+          icon: "✨",
+          gradientClass: "app-grad-studio",
+          badge: "Builder",
+          isActive: state.activeChannel === "studio"
+        })
+      : "";
+
+  const usersAppTileHtml =
+    state.activeCategory === "all" || state.activeCategory === "corporate"
+      ? renderAppTileHtml({
+          channel: "users",
+          label: "Operators",
+          icon: "👥",
+          gradientClass: "app-grad-users",
+          badge: state.users.length,
+          isActive: state.activeChannel === "users"
+        })
+      : "";
+
+  const mcpAppTileHtml =
+    state.activeCategory === "all" || state.activeCategory === "intelligence"
+      ? renderAppTileHtml({
+          channel: "mcp",
+          label: "MCP Remote",
+          icon: "🤖",
+          gradientClass: "app-grad-mcp",
+          badge: `${state.mcp.tools.length} Tools`,
+          isActive: state.activeChannel === "mcp"
+        })
+      : "";
+
+  const addAppTileHtml = `
+    <button class="tv-app-tile" data-action="open-store" tabindex="0" title="Install New Object App (+12 Blueprints Ready)">
+      <div class="tv-app-squircle app-grad-add">
+        <span class="tv-app-icon" style="font-size:1.6rem; color:#94a3b8;">➕</span>
+        <span class="tv-app-badge" style="background:#1e293b; color:#93c5fd;">+12</span>
+      </div>
+      <span class="tv-app-label">Install App</span>
+      <span class="tv-app-active-dot"></span>
     </button>
   `;
 
-  dock.querySelectorAll(".channel-pill").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      state.activeChannel = btn.dataset.channel;
+  dock.innerHTML = `
+    <div class="tv-category-bar">
+      ${categoryPillsHtml}
+    </div>
+    <div class="tv-apps-shelf" id="topAppsShelf" role="region" aria-label="Smart TV OS Installed Apps">
+      ${storeAppTileHtml}
+      ${homeAppTileHtml}
+      ${objectAppTilesHtml}
+      ${studioAppTileHtml}
+      ${usersAppTileHtml}
+      ${mcpAppTileHtml}
+      ${addAppTileHtml}
+    </div>
+  `;
+
+  // Event delegation on channel dock
+  dock.onclick = (e) => {
+    const catBtn = e.target.closest(".category-tab-btn");
+    if (catBtn) {
+      state.activeCategory = catBtn.dataset.category;
+      renderChannelDock();
+      return;
+    }
+    const appTile = e.target.closest(".tv-app-tile");
+    if (appTile) {
+      if (appTile.dataset.action === "open-store") {
+        state.activeChannel = "studio";
+      } else if (appTile.dataset.channel) {
+        state.activeChannel = appTile.dataset.channel;
+      }
       state.stageFilter = null;
       state.spatialIndex = 0;
       renderChannelDock();
       renderViewport();
-    });
-  });
+    }
+  };
 }
 
 function getStageColor(objDef, stageId) {
   const found = (objDef?.lifecycle || []).find((s) => s.id === stageId);
-  return found ? found.color : "#10b981";
+  return found ? found.color : "#3b82f6";
 }
 
 function renderCardHtml(objDef, rec) {
@@ -197,6 +443,84 @@ function renderCardHtml(objDef, rec) {
 
 function renderHomeDeck() {
   const m = state.pulse?.metrics || {};
+  const unactivated = state.blueprints.filter((b) => !b.isActivated);
+
+  // Home Deck TV OS Apps Shelf (Directly inspired by LG webOS & Apple TV OS apps row)
+  const homeAppTilesHtml = [
+    renderAppTileHtml({
+      channel: "studio",
+      label: "App Store",
+      icon: "❖",
+      gradientClass: "app-grad-store",
+      badge: `+${unactivated.length}`,
+      isActive: false
+    }),
+    ...state.objects.map((obj) => {
+      const meta = getObjectAppMeta(obj.apiName);
+      const count = (state.recordsByObject[obj.apiName] || []).length;
+      return renderAppTileHtml({
+        channel: obj.apiName,
+        label: obj.pluralLabel || meta.label,
+        icon: obj.icon || meta.icon,
+        gradientClass: meta.gradientClass,
+        badge: count,
+        isActive: false
+      });
+    }),
+    renderAppTileHtml({
+      channel: "studio",
+      label: "Object Studio",
+      icon: "✨",
+      gradientClass: "app-grad-studio",
+      badge: "Builder",
+      isActive: false
+    }),
+    renderAppTileHtml({
+      channel: "users",
+      label: "Operators",
+      icon: "👥",
+      gradientClass: "app-grad-users",
+      badge: state.users.length,
+      isActive: false
+    }),
+    renderAppTileHtml({
+      channel: "mcp",
+      label: "MCP AI Hub",
+      icon: "🤖",
+      gradientClass: "app-grad-mcp",
+      badge: `${state.mcp.tools.length} Tools`,
+      isActive: false
+    }),
+    `
+    <button class="tv-app-tile" data-action="open-store" tabindex="0" title="Install New Object App (+12 Blueprints Ready)">
+      <div class="tv-app-squircle app-grad-add">
+        <span class="tv-app-icon" style="font-size:1.6rem; color:#94a3b8;">➕</span>
+        <span class="tv-app-badge" style="background:#1e293b; color:#93c5fd;">+12</span>
+      </div>
+      <span class="tv-app-label">Install App</span>
+      <span class="tv-app-active-dot"></span>
+    </button>
+    `
+  ].join("");
+
+  const homeAppsShelfSection = `
+    <section class="home-apps-showcase">
+      <div class="home-apps-header">
+        <div class="home-apps-header-left">
+          <span style="font-size:1.4rem;">📺</span>
+          <div>
+            <h3>Your Installed Apps & Objects</h3>
+            <p>Select any object app to launch its lifecycle workspace or install new sporting blueprints</p>
+          </div>
+        </div>
+        <button class="tv-btn" data-jump-channel="studio">Browse App Store (+${unactivated.length} Blueprints) →</button>
+      </div>
+      <div class="tv-apps-shelf" style="padding-left:0; padding-right:0;">
+        ${homeAppTilesHtml}
+      </div>
+    </section>
+  `;
+
   const railsHtml = state.objects
     .map((obj) => {
       const records = state.recordsByObject[obj.apiName] || [];
@@ -205,12 +529,12 @@ function renderHomeDeck() {
           <div class="rail-header">
             <div class="rail-title-group">
               <span>${escapeHtml(obj.icon)}</span>
-              <h3>${escapeHtml(obj.pluralLabel)} Channel</h3>
+              <h3>${escapeHtml(obj.pluralLabel)} Content Rail</h3>
               <span class="channel-count">${records.length} Active Records</span>
             </div>
             <div style="display:flex; gap:8px;">
               <button class="tv-btn" data-open-create="${escapeHtml(obj.apiName)}">+ New ${escapeHtml(obj.label)}</button>
-              <button class="tv-btn" data-jump-channel="${escapeHtml(obj.apiName)}">Open Lifecycle Board →</button>
+              <button class="tv-btn" data-jump-channel="${escapeHtml(obj.apiName)}">Open ${escapeHtml(obj.pluralLabel)} App →</button>
             </div>
           </div>
           <div class="tv-rail-track">
@@ -247,7 +571,7 @@ function renderHomeDeck() {
         <span class="eyebrow-tag">CENTRAL SPORTING & VENUE ORCHESTRATION LAYER</span>
         <h2>Matchday -28h Operational Command Deck</h2>
         <p>
-          Navigate Staff, Teams, Venues, and Custom Objects like a Smart TV OS. Every record follows a customizable Salesforce-style lifecycle state machine and is exposed live via the embedded Model Context Protocol (MCP).
+          Navigate Staff, Teams, Venues, and Custom Objects like apps in a Smart TV OS. Every record follows a customizable Salesforce-style lifecycle state machine and is exposed live via the embedded Model Context Protocol (MCP).
         </p>
         <div class="hero-actions">
           <button class="tv-btn tv-btn-primary" id="heroCreateObjectBtn">✨ Create Custom Object</button>
@@ -274,13 +598,15 @@ function renderHomeDeck() {
       </div>
     </section>
 
+    ${homeAppsShelfSection}
+
     ${railsHtml}
 
     <section class="tv-rail-section">
       <div class="rail-header">
         <div class="rail-title-group">
           <span>⚡</span>
-          <h3>Live Orchestration & External Connector Bus</h3>
+          <h3>Recent Input & Live Connector Bus</h3>
         </div>
       </div>
       <div class="tv-rail-track">
@@ -294,6 +620,7 @@ function renderObjectChannel(apiName) {
   const objDef = state.objects.find((o) => o.apiName === apiName);
   if (!objDef) return `<div class="tv-panel">Object not found.</div>`;
 
+  const meta = getObjectAppMeta(apiName);
   const allRecords = state.recordsByObject[apiName] || [];
   const filteredRecords = state.stageFilter
     ? allRecords.filter((r) => r.stage === state.stageFilter)
@@ -344,23 +671,30 @@ function renderObjectChannel(apiName) {
 
   return `
     <section class="hero-spotlight">
-      <div class="hero-left">
-        <span class="eyebrow-tag">${escapeHtml(objDef.category)} • API NAME: ${escapeHtml(objDef.apiName)}</span>
-        <h2>${escapeHtml(objDef.icon)} ${escapeHtml(objDef.pluralLabel)} Lifecycle Channel</h2>
-        <p>${escapeHtml(objDef.description)}</p>
-        <div class="hero-actions">
-          <button class="tv-btn tv-btn-primary" data-open-create="${escapeHtml(objDef.apiName)}">+ New ${escapeHtml(objDef.label)}</button>
-          ${
-            state.stageFilter
-              ? `<button class="tv-btn" id="clearStageFilterBtn">Show All Lifecycle Stages (${allRecords.length})</button>`
-              : ""
-          }
+      <div style="display:flex; align-items:center; gap:24px; flex-wrap:wrap;">
+        <div class="tv-app-squircle ${meta.gradientClass}" style="width:92px; height:92px; border-radius:24px; flex-shrink:0;">
+          <div class="tv-app-gloss"></div>
+          <span class="tv-app-icon" style="font-size:2.4rem;">${escapeHtml(objDef.icon || meta.icon)}</span>
+          <span class="tv-app-badge">${allRecords.length}</span>
+        </div>
+        <div class="hero-left">
+          <span class="eyebrow-tag">${escapeHtml(objDef.category)} • API NAME: ${escapeHtml(objDef.apiName)}</span>
+          <h2>${escapeHtml(objDef.pluralLabel)} App & Lifecycle Workspace</h2>
+          <p>${escapeHtml(objDef.description)}</p>
+          <div class="hero-actions">
+            <button class="tv-btn tv-btn-primary" data-open-create="${escapeHtml(objDef.apiName)}">+ New ${escapeHtml(objDef.label)}</button>
+            ${
+              state.stageFilter
+                ? `<button class="tv-btn" id="clearStageFilterBtn">Show All Lifecycle Stages (${allRecords.length})</button>`
+                : ""
+            }
+          </div>
         </div>
       </div>
-      <div style="min-width:260px;">
+      <div style="min-width:240px;">
         <div class="metric-tile">
           <div class="metric-value">${allRecords.length}</div>
-          <div class="metric-label">Total ${escapeHtml(objDef.pluralLabel)} Records</div>
+          <div class="metric-label">Active Records in ${escapeHtml(objDef.pluralLabel)}</div>
         </div>
       </div>
     </section>
@@ -376,30 +710,36 @@ function renderObjectChannel(apiName) {
 function renderObjectStudio() {
   const blueprintCards = state.blueprints
     .map(
-      (bp) => `
-      <div class="blueprint-card">
-        <div>
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <span style="font-size:1.5rem;">${escapeHtml(bp.icon)}</span>
-            <span class="platform-badge">${escapeHtml(bp.category)}</span>
+      (bp) => {
+        const meta = getObjectAppMeta(bp.apiName);
+        return `
+        <div class="blueprint-card">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <div class="tv-app-squircle ${meta.gradientClass}" style="width:58px; height:58px; border-radius:16px;">
+                <div class="tv-app-gloss"></div>
+                <span class="tv-app-icon" style="font-size:1.6rem;">${escapeHtml(bp.icon || meta.icon)}</span>
+              </div>
+              <span class="platform-badge">${escapeHtml(bp.category)}</span>
+            </div>
+            <h4 style="font-size:1.02rem; margin-bottom:4px; color:#ffffff;">${escapeHtml(bp.pluralLabel)} <code style="font-size:0.75rem; color:#94a3b8;">(${escapeHtml(bp.apiName)})</code></h4>
+            <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.4; margin-bottom:10px;">
+              ${escapeHtml(bp.description)}
+            </p>
+            <div style="font-size:0.74rem; color:#cbd5e1;">
+              <strong>Lifecycle:</strong> ${bp.lifecycle.map((s) => escapeHtml(s.id)).join(" → ")}
+            </div>
           </div>
-          <h4 style="font-size:1.02rem; margin-bottom:4px;">${escapeHtml(bp.pluralLabel)} <code style="font-size:0.75rem; color:#94a3b8;">(${escapeHtml(bp.apiName)})</code></h4>
-          <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.4; margin-bottom:10px;">
-            ${escapeHtml(bp.description)}
-          </p>
-          <div style="font-size:0.74rem; color:#cbd5e1;">
-            <strong>Lifecycle:</strong> ${bp.lifecycle.map((s) => escapeHtml(s.id)).join(" → ")}
+          <div style="margin-top:12px;">
+            ${
+              bp.isActivated
+                ? `<button class="tv-btn tv-btn-blue" style="width:100%; justify-content:center;" data-jump-channel="${escapeHtml(bp.apiName)}">✓ Installed — Launch App →</button>`
+                : `<button class="tv-btn tv-btn-primary" style="width:100%; justify-content:center;" data-activate-blueprint="${escapeHtml(bp.apiName)}">⚡ Install App (1-Click)</button>`
+            }
           </div>
         </div>
-        <div style="margin-top:12px;">
-          ${
-            bp.isActivated
-              ? `<button class="tv-btn" style="width:100%; justify-content:center;" data-jump-channel="${escapeHtml(bp.apiName)}">✓ Active — Open Channel →</button>`
-              : `<button class="tv-btn tv-btn-primary" style="width:100%; justify-content:center;" data-activate-blueprint="${escapeHtml(bp.apiName)}">⚡ Activate 1-Click Blueprint</button>`
-          }
-        </div>
-      </div>
-    `
+      `;
+      }
     )
     .join("");
 
@@ -681,6 +1021,22 @@ function renderViewport() {
 
 function bindViewportInteractions() {
   const viewport = document.getElementById("tvViewport");
+
+  // TV OS App Tile clicks inside viewport (e.g. Home Deck apps showcase)
+  viewport.querySelectorAll(".tv-app-tile").forEach((tile) => {
+    tile.addEventListener("click", () => {
+      if (tile.dataset.action === "open-store") {
+        state.activeChannel = "studio";
+      } else if (tile.dataset.channel) {
+        state.activeChannel = tile.dataset.channel;
+      }
+      state.stageFilter = null;
+      state.spatialIndex = 0;
+      renderChannelDock();
+      renderViewport();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
 
   // Card clicks -> open Record Lifecycle Remote Drawer
   viewport.querySelectorAll(".tv-card").forEach((card) => {
@@ -1297,23 +1653,58 @@ document.addEventListener("DOMContentLoaded", () => {
     const activeTag = document.activeElement?.tagName;
     if (["INPUT", "TEXTAREA", "SELECT"].includes(activeTag)) return;
 
+    const activeEl = document.activeElement;
+    const appTiles = Array.from(document.querySelectorAll("#topAppsShelf .tv-app-tile"));
     const cards = Array.from(document.querySelectorAll(".tv-card"));
-    if (e.key === "ArrowRight" && cards.length) {
-      e.preventDefault();
-      state.spatialIndex = (state.spatialIndex + 1) % cards.length;
-      cards.forEach((c, i) => c.classList.toggle("spatial-focus", i === state.spatialIndex));
-      cards[state.spatialIndex].focus();
-    } else if (e.key === "ArrowLeft" && cards.length) {
-      e.preventDefault();
-      state.spatialIndex = (state.spatialIndex - 1 + cards.length) % cards.length;
-      cards.forEach((c, i) => c.classList.toggle("spatial-focus", i === state.spatialIndex));
-      cards[state.spatialIndex].focus();
-    } else if (e.key === "Enter" && document.activeElement?.classList?.contains("tv-card")) {
-      const card = document.activeElement;
-      openRecordDrawer(card.dataset.object, card.dataset.recordId);
-    } else if (e.key.toLowerCase() === "n") {
-      const targetObj = state.objects.find((o) => o.apiName === state.activeChannel)?.apiName || "staff";
-      openCreateRecordModal(targetObj);
+    const isAppFocused = activeEl && activeEl.classList.contains("tv-app-tile");
+
+    // If an app tile in the top dock or shelf is focused
+    if (isAppFocused && appTiles.length) {
+      const currentIdx = appTiles.indexOf(activeEl);
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        const nextIdx = (currentIdx + 1) % appTiles.length;
+        appTiles[nextIdx].focus();
+        return;
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        const prevIdx = (currentIdx - 1 + appTiles.length) % appTiles.length;
+        appTiles[prevIdx].focus();
+        return;
+      } else if (e.key === "ArrowDown" && cards.length) {
+        e.preventDefault();
+        cards[0].focus();
+        cards[0].classList.add("spatial-focus");
+        state.spatialIndex = 0;
+        return;
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        activeEl.click();
+        return;
+      }
+    }
+
+    if (cards.length) {
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        state.spatialIndex = (state.spatialIndex + 1) % cards.length;
+        cards.forEach((c, i) => c.classList.toggle("spatial-focus", i === state.spatialIndex));
+        cards[state.spatialIndex].focus();
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        state.spatialIndex = (state.spatialIndex - 1 + cards.length) % cards.length;
+        cards.forEach((c, i) => c.classList.toggle("spatial-focus", i === state.spatialIndex));
+        cards[state.spatialIndex].focus();
+      } else if (e.key === "ArrowUp" && appTiles.length) {
+        e.preventDefault();
+        cards.forEach((c) => c.classList.remove("spatial-focus"));
+        appTiles[0].focus();
+      } else if (e.key === "Enter" && activeEl?.classList?.contains("tv-card")) {
+        openRecordDrawer(activeEl.dataset.object, activeEl.dataset.recordId);
+      } else if (e.key.toLowerCase() === "n") {
+        const targetObj = state.objects.find((o) => o.apiName === state.activeChannel)?.apiName || "staff";
+        openCreateRecordModal(targetObj);
+      }
     }
   });
 });
